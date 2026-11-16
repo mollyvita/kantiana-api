@@ -69,7 +69,7 @@ function isExpired(attrs: string[]): boolean {
     const eq = attr.indexOf("=");
     const key = (eq < 0 ? attr : attr.slice(0, eq)).trim().toLowerCase();
     const v = eq < 0 ? "" : attr.slice(eq + 1).trim();
-    if (key === "max-age") return Number(v) <= 0;
+    if (key === "max-age" && /^-?\d+$/.test(v)) return Number(v) <= 0;
     if (key === "expires") expires = v;
   }
   if (expires === undefined) return false;

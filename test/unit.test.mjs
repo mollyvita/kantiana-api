@@ -67,3 +67,9 @@ test("CookieJar: positive Max-Age wins over past Expires", () => {
   jar.set("h", ["a=1; Max-Age=3600; Expires=Thu, 01 Jan 1970 00:00:00 GMT"]);
   assert.equal(jar.header("h"), "a=1");
 });
+
+test("CookieJar: invalid Max-Age is ignored in favour of Expires", () => {
+  const jar = new CookieJar();
+  jar.set("h", ["a=1", "a=1; Max-Age=abc; Expires=Thu, 01 Jan 1970 00:00:00 GMT"]);
+  assert.equal(jar.header("h"), undefined);
+});
