@@ -1,0 +1,27 @@
+{
+  "name": "kantiana-api",
+  "version": "0.1.0",
+  "description": "TypeScript API client for BFU Kantiana: lk.kantiana.ru and eios/lms Moodle",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "tsc -p tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test test/*.test.mjs",
+    "smoke": "node examples/smoke.mjs"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/node": "^20.17.0",
+    "typescript": "^5.6.3"
+  }
+}
