@@ -28,7 +28,7 @@ export class CookieJar {
       if (eq < 1) continue;
       const name = pair.slice(0, eq).trim();
       const value = pair.slice(eq + 1).trim();
-      const expired = value === "deleted" || attrs.some(isExpiredAttr);
+      const expired = value === "deleted" || isExpired(attrs);
       if (expired) hostJar.delete(name);
       else hostJar.set(name, value);
     }
@@ -62,16 +62,19 @@ export class CookieJar {
   }
 }
 
-function isExpiredAttr(attr: string): boolean {
-  const [k, ...rest] = attr.split("=");
-  const key = k.trim().toLowerCase();
-  const v = rest.join("=").trim();
-  if (key === "max-age") return Number(v) <= 0;
-  if (key === "expires") {
-    const t = Date.parse(v);
-    return !Number.isNaN(t) && t <= Date.now();
+/** Max-Age takes precedence over Expires (RFC 6265 §5.3). */
+function isExpired(attrs: string[]): boolean {
+  let expires: string | undefined;
+  for (const attr of attrs) {
+    const eq = attr.indexOf("=");
+    const key = (eq < 0 ? attr : attr.slice(0, eq)).trim().toLowerCase();
+    const v = eq < 0 ? "" : attr.slice(eq + 1).trim();
+    if (key === "max-age") return Number(v) <= 0;
+    if (key === "expires") expires = v;
   }
-  return false;
+  if (expires === undefined) return false;
+  const t = Date.parse(expires);
+  return !Number.isNaN(t) && t <= Date.now();
 }
 
 function getSetCookies(headers: Headers): string[] {
