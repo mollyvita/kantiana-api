@@ -28,7 +28,7 @@ export class CookieJar {
       if (eq < 1) continue;
       const name = pair.slice(0, eq).trim();
       const value = pair.slice(eq + 1).trim();
-      const expired = attrs.some((a) => /^\s*max-age=0\s*$/i.test(a)) || value === "deleted";
+      const expired = value === "deleted" || attrs.some(isExpiredAttr);
       if (expired) hostJar.delete(name);
       else hostJar.set(name, value);
     }
@@ -60,6 +60,18 @@ export class CookieJar {
     for (const [host, cookies] of Object.entries(data)) jar.jar.set(host, new Map(Object.entries(cookies)));
     return jar;
   }
+}
+
+function isExpiredAttr(attr: string): boolean {
+  const [k, ...rest] = attr.split("=");
+  const key = k.trim().toLowerCase();
+  const v = rest.join("=").trim();
+  if (key === "max-age") return Number(v) <= 0;
+  if (key === "expires") {
+    const t = Date.parse(v);
+    return !Number.isNaN(t) && t <= Date.now();
+  }
+  return false;
 }
 
 function getSetCookies(headers: Headers): string[] {

@@ -54,3 +54,10 @@ test("fileUrl never sends the token to other origins", () => {
   m.token = "T";
   assert.equal(m.fileUrl("https://evil.example/pluginfile.php/1/a.pdf"), "https://evil.example/pluginfile.php/1/a.pdf");
 });
+
+test("CookieJar drops cookies expired via Expires or negative Max-Age", () => {
+  const jar = new CookieJar();
+  jar.set("h", ["a=1", "b=2", "c=3"]);
+  jar.set("h", ["a=x; Expires=Thu, 01 Jan 1970 00:00:00 GMT", "b=x; Max-Age=-1", "c=4; Expires=Fri, 01 Jan 2100 00:00:00 GMT"]);
+  assert.equal(jar.header("h"), "c=4");
+});
