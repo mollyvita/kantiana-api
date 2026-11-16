@@ -114,12 +114,13 @@ export class Http {
     let current = new URL(url);
     let method = opts.method ?? "GET";
     let body = opts.body;
+    const extraHeaders: Record<string, string> = { ...opts.headers };
 
     for (;;) {
       const headers: Record<string, string> = {
         "User-Agent": this.userAgent,
         "Accept-Language": "ru-RU,ru;q=0.9,en;q=0.8",
-        ...opts.headers,
+        ...extraHeaders,
       };
       const cookie = this.jar.header(current.host);
       if (cookie) headers.Cookie = cookie;
@@ -131,7 +132,11 @@ export class Http {
       if (!follow || res.status < 300 || res.status >= 400 || !location) return res;
       if (!/^https?:/i.test(new URL(location, current).protocol)) return res;
       if (remaining-- <= 0) throw new KantianaError(`Too many redirects for ${url}`);
-      current = new URL(location, current);
+      const next = new URL(location, current);
+      if (next.origin !== current.origin) {
+        for (const k of Object.keys(extraHeaders)) if (/^(authorization|cookie)$/i.test(k)) delete extraHeaders[k];
+      }
+      current = next;
       if (res.status !== 307 && res.status !== 308) {
         method = "GET";
         body = undefined;
