@@ -50,6 +50,13 @@ export class MoodleApi {
     readonly baseUrl: string = EIOS_BASE_URL,
   ) {}
 
+  /** Forgets the token and cached site info (e.g. before switching accounts). */
+  reset(): void {
+    this.token = null;
+    this.privateToken = null;
+    this.site = null;
+  }
+
   get isAuthenticated(): boolean {
     return this.token !== null;
   }

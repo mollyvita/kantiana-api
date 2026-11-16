@@ -37,8 +37,8 @@ export class KantianaClient {
   /** Logs into LK; Moodle tokens are obtained lazily via `connectEios()` / `connectLms()`. */
   async login(login: string, password: string, type: AccountType = "student"): Promise<void> {
     this.http.jar.clear();
-    this.eios.token = this.eios.privateToken = null;
-    this.lms.token = this.lms.privateToken = null;
+    this.eios.reset();
+    this.lms.reset();
     this.credentials = null;
     await this.lk.login(login, password, type);
     this.credentials = { login, password, type };
