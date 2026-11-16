@@ -22,7 +22,8 @@ export function normalizeLogin(login: string, type: AccountType = "student"): st
 
 function isoDate(date?: Date | string): string {
   if (typeof date === "string") return date;
-  return (date ?? new Date()).toISOString().slice(0, 10);
+  // LK dates are in university local time (Kaliningrad), not UTC.
+  return new Intl.DateTimeFormat("en-CA", { timeZone: "Europe/Kaliningrad" }).format(date ?? new Date());
 }
 
 interface Envelope<T> {
