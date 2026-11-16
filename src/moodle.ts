@@ -120,7 +120,7 @@ export class MoodleApi {
 
   /** Appends the token so pluginfile.php URLs can be downloaded directly. */
   fileUrl(url: string): string {
-    if (!this.token) return url;
+    if (!this.token || new URL(url, this.baseUrl).origin !== new URL(this.baseUrl).origin) return url;
     const u = new URL(url.includes("/webservice/pluginfile.php/") ? url : url.replace("/pluginfile.php/", "/webservice/pluginfile.php/"));
     u.searchParams.set("token", this.token);
     return u.toString();

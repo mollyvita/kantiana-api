@@ -48,3 +48,9 @@ test("MoodleApi.fileUrl handles both pluginfile forms", () => {
     "https://eios.kantiana.ru/webservice/pluginfile.php/1/a.pdf?forcedownload=1&token=T",
   );
 });
+
+test("fileUrl never sends the token to other origins", () => {
+  const m = new MoodleApi(new Http(), "https://eios.kantiana.ru");
+  m.token = "T";
+  assert.equal(m.fileUrl("https://evil.example/pluginfile.php/1/a.pdf"), "https://evil.example/pluginfile.php/1/a.pdf");
+});
